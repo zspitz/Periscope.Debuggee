@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.DebuggerVisualizers;
+using System;
 using System.IO;
 
 namespace Periscope.Debuggee {
@@ -7,10 +8,15 @@ namespace Periscope.Debuggee {
 
         public override void TransferData(object target, Stream incomingData, Stream outgoingData) {
             var config = (TConfig)Deserialize(incomingData);
-            var response = GenerateResponse((TTarget)target, config);
+            var response = new Response();
+            try {
+                response.Model = GetResponseModel((TTarget)target, config);
+            } catch (Exception ex) {
+                response.ExceptionData = new ExceptionData(ex);
+            }
             Serialize(outgoingData, response);
         }
 
-        public abstract object GenerateResponse(TTarget target, TConfig config);
+        public abstract object GetResponseModel(TTarget target, TConfig config);
     }
 }
