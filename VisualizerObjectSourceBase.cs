@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.DebuggerVisualizers;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace Periscope.Debuggee {

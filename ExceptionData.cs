@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Periscope.Debuggee {
     [Serializable]
@@ -19,13 +20,24 @@ namespace Periscope.Debuggee {
         public ExceptionData? InnerException { get; }
         public string? LogMessage { get; }
 
-        public override string ToString() =>
-            $@"Log message: {LogMessage}
-Typename: {TypeName}
-Message: {Message}
-InnerException: {InnerException?.TypeName}
-
+        public override string ToString() {
+            var parts = new[] {
+                ("Log message",LogMessage),
+                ("TypeName", TypeName),
+                ("Message", Message),
+                ("Inner exception", InnerException?.TypeName)
+            }
+            .Where(x => !string.IsNullOrWhiteSpace(x.Item2))
+            .Select(x => $"{x.Item1}: {x.Item2}");
+            var ret = string.Join("\n", parts);
+            if (!string.IsNullOrWhiteSpace(StackTrace)) {
+                ret += $@"
 Stack trace:
-{StackTrace}";
+{StackTrace}
+";
+            }
+
+            return ret;
+        }
     }
 }
