@@ -6,8 +6,7 @@ namespace Periscope.Debuggee {
     public abstract class VisualizerObjectSourceBase<TTarget, TConfig> : VisualizerObjectSource  where TConfig : ConfigBase<TConfig> {
         public override void GetData(object target, Stream outgoingData) => Serialize(outgoingData, GetConfigKey());
 
-        // This is all far more complicated than necessary, because I haven't been able to attach a debugger to this code
-        public override void TransferData(object target, Stream incomingData, Stream outgoingData) {
+        public override void TransferData(object? target, Stream incomingData, Stream outgoingData) {
             void logException(string logMessage, Exception ex) => Serialize(outgoingData, new ExceptionData(ex, logMessage));
 
             TConfig? config;
