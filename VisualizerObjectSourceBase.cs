@@ -4,19 +4,19 @@ using System.IO;
 
 namespace Periscope.Debuggee {
     public abstract class VisualizerObjectSourceBase<TTarget, TConfig> : VisualizerObjectSource  where TConfig : ConfigBase<TConfig> {
-        private object? _value;
+        private object? value;
 
         public override void GetData(object target, Stream outgoingData) {
             // Fix for https://github.com/zspitz/Periscope/issues/24
-            if (target is ValueType) { _value = target; }
-            Serialize(outgoingData, GetConfigKey());
+            if (target is ValueType) { value = target; }
+            Serialize(outgoingData, GetConfigKey(target));
         }
 
         public override void TransferData(object? target, Stream incomingData, Stream outgoingData) {
             void logException(string logMessage, Exception ex) => Serialize(outgoingData, new ExceptionData(ex, logMessage));
 
             // Fix for https://github.com/zspitz/Periscope/issues/24
-            target ??= _value;
+            target ??= value;
 
             TConfig? config;
             try {
@@ -30,7 +30,7 @@ namespace Periscope.Debuggee {
             if (target is TTarget t1) {
                 t = t1;
             } else {
-                string message =
+                var message =
                     target is null ?
                         "Target is null." :
                         $"Target is of type {target.GetType()}; expected {typeof(TTarget)}.";
@@ -54,7 +54,7 @@ namespace Periscope.Debuggee {
             }
         }
 
-        public virtual string GetConfigKey() => "";
+        public virtual string GetConfigKey(object target) => "";
         public abstract object GetResponse(TTarget target, TConfig config);
     }
 }
